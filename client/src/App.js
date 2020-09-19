@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -17,43 +18,21 @@ const styles = theme => ({
   },
   table: {
     minWidth:1080
+  },
+  progress: {
+    margin: theme.spacing(2)
   }
 })
-
-// const customers =   [
-//   {
-//     'id' : 1,
-//     'image' : 'https://placeimg.com/64/64/1',
-//     'name' : '홍길동',
-//     'birthday' : '980101',
-//     'gender' : '남자',
-//     'job' : '대학생'
-//   },
-//   {
-//     'id' : 2,
-//     'image' : 'https://placeimg.com/64/64/2',
-//     'name' : '김태희',
-//     'birthday' : '900202',
-//     'gender' : '여자',
-//     'job' : '연예인'
-//   },
-//   {
-//     'id' : 3,
-//     'image' : 'https://placeimg.com/64/64/3',
-//     'name' : '비',
-//     'birthday' : '920101',
-//     'gender' : '남자',
-//     'job' : '가수'
-//   }
-// ]
 
 class App extends Component {
 
   state = {
-    customers: ""
+    customers: "",
+    completed: 0
   }
 
   componentDidMount() {
+    this.timer = setInterval(this.progress, 20);
     this.callApi()
       .then(res => this.setState({customers: res}))       
       .catch(err => console.log(err));
@@ -65,6 +44,11 @@ class App extends Component {
     return body;
   }
   
+  progress = () => {
+    const { completed } = this.state;
+    this.setState({ completed: completed >= 100 ? 0 : completed + 1 })
+  }
+
   render() {   
     const { classes } = this.props;
     return (
@@ -92,8 +76,13 @@ class App extends Component {
                     gender={c.birthday}
                     job={c.job}
                   />
-                );
-              }) : ""
+                )
+              }) : 
+              <TableRow>
+                <TableCell colSpan="6" align="center">
+                  <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed}/>
+                </TableCell>
+              </TableRow>
             }
           </TableBody>
         </Table>       
@@ -103,3 +92,31 @@ class App extends Component {
 }
 
 export default withStyles(styles) (App);
+
+// 22행에 붙여넣고 테스트
+// const customers =   [
+//   {
+//     'id' : 1,
+//     'image' : 'https://placeimg.com/64/64/1',
+//     'name' : '홍길동',
+//     'birthday' : '980101',
+//     'gender' : '남자',
+//     'job' : '대학생'
+//   },
+//   {
+//     'id' : 2,
+//     'image' : 'https://placeimg.com/64/64/2',
+//     'name' : '김태희',
+//     'birthday' : '900202',
+//     'gender' : '여자',
+//     'job' : '연예인'
+//   },
+//   {
+//     'id' : 3,
+//     'image' : 'https://placeimg.com/64/64/3',
+//     'name' : '비',
+//     'birthday' : '920101',
+//     'gender' : '남자',
+//     'job' : '가수'
+//   }
+// ]
