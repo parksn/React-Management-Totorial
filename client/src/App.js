@@ -6,13 +6,13 @@ import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell/TableCell';
-import { withStyles } from'@material-ui/core/styles';
+import TableCell from '@material-ui/core/TableCell';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: 'auto'
   },
   table: {
@@ -20,34 +20,51 @@ const styles = theme => ({
   }
 })
 
-const customers = [
-  {
-    'id' : 1,
-    'image' : 'https://placeimg.com/64/64/1',
-    'name' : '홍길동',
-    'birthday' : '980101',
-    'gender' : '남자',
-    'job' : '대학생'
-  },
-  {
-    'id' : 2,
-    'image' : 'https://placeimg.com/64/64/2',
-    'name' : '김태희',
-    'birthday' : '900202',
-    'gender' : '여자',
-    'job' : '연예인'
-  },
-  {
-    'id' : 3,
-    'image' : 'https://placeimg.com/64/64/3',
-    'name' : '비',
-    'birthday' : '920101',
-    'gender' : '남자',
-    'job' : '가수'
-  }
-]
+// const customers =   [
+//   {
+//     'id' : 1,
+//     'image' : 'https://placeimg.com/64/64/1',
+//     'name' : '홍길동',
+//     'birthday' : '980101',
+//     'gender' : '남자',
+//     'job' : '대학생'
+//   },
+//   {
+//     'id' : 2,
+//     'image' : 'https://placeimg.com/64/64/2',
+//     'name' : '김태희',
+//     'birthday' : '900202',
+//     'gender' : '여자',
+//     'job' : '연예인'
+//   },
+//   {
+//     'id' : 3,
+//     'image' : 'https://placeimg.com/64/64/3',
+//     'name' : '비',
+//     'birthday' : '920101',
+//     'gender' : '남자',
+//     'job' : '가수'
+//   }
+// ]
 
 class App extends Component {
+
+  state = {
+    customers: ""
+  }
+
+  componentDidMount() {
+    this.callApi()
+      .then(res => this.setState({customers: res}))       
+      .catch(err => console.log(err));
+  }
+
+  callApi = async () => {
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  }
+  
   render() {   
     const { classes } = this.props;
     return (
@@ -64,8 +81,7 @@ class App extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {
-              customers.map(c => {
+           {this.state.customers ? this.state.customers.map(c => {
                 return (
                   <Customer
                     key={c.id}
@@ -76,8 +92,8 @@ class App extends Component {
                     gender={c.birthday}
                     job={c.job}
                   />
-                )
-              })
+                );
+              }) : ""
             }
           </TableBody>
         </Table>       
